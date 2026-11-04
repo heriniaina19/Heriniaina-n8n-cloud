@@ -1,0 +1,124 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "fc0bb036-7f26-4801-bbd3-1d6eab779896",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "https://www.journaldugeek.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "717b5b18-048a-42f9-a6bd-895a7282c17a",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        144
+      ],
+      "id": "2f0f3718-75c8-4b46-935d-aef156b07404",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// On récupère le tout premier article de la liste\nconst article = $input.item.json;\n\n// On formate le texte pour un post professionnel\nconst textePost = `📢 [VEILLE TECH] À ne pas manquer aujourd'hui !\n\n${article.title}\n\nUn sujet passionnant à découvrir en détail ici :\n${article.link}\n\n#Tech #Innovation #Veille #n8n`;\n\nreturn {\n  texte_linkedin: textePost\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "b63ff152-8d52-45e9-9b5b-9ed1b3a72607",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        656,
+        0
+      ],
+      "id": "56b71260-79b1-4ca3-a69b-2b6b3df19b1d",
+      "name": "Create a post"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "5cbeeced07ecfdb26ae15fe6ee66e534cc8b126b30ae45b67ebe685f2b6dc412"
+  }
+}
